@@ -7,11 +7,12 @@ cymem==2.0.5
 elasticsearch==7.10.1
 elasticsearch-dsl==7.3.0
 en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.0.0a0/en_core_web_sm-3.0.0a0.tar.gz
--e git+https://github.com/eubinecto/idiom2topics.git@59ff77b35b52b3f3f8fc66e08ae8e456c6103839#egg=idiom2topics
+filesplit==3.0.2
+-e git+https://github.com/eubinecto/idiom2topics.git@6e67b1f442e762b1cd8d7029d6170ba0e4caa3d4#egg=idiom2topics
 idna==2.10
 Jinja2==2.11.2
 MarkupSafe==1.1.1
-merge-idioms @ file:///Users/eubin/Desktop/Projects/Big/idiom2topics/data/merge_idioms-0.0.2.tar.gz
+merge-idioms @ file:///Users/eubin/Desktop/Projects/Big/idiom2topics/data/merge_idioms-0.0.4.tar.gz
 murmurhash==1.0.5
 numpy==1.19.5
 packaging==20.8
@@ -21,6 +22,7 @@ py4j==0.10.9
 pydantic==1.6.1
 pyparsing==2.4.7
 pyspark==3.0.1
+pyspark-stubs==3.0.0.post1
 python-dateutil==2.8.1
 pytokenizations==0.7.2
 requests==2.25.1
