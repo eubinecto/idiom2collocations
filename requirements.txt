@@ -4,27 +4,33 @@ certifi==2020.12.5
 chardet==4.0.0
 click==7.1.2
 cymem==2.0.5
+elasticsearch==7.10.1
+elasticsearch-dsl==7.3.0
+en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.0.0a0/en_core_web_sm-3.0.0a0.tar.gz
+-e git+https://github.com/eubinecto/idiom2topics.git@59ff77b35b52b3f3f8fc66e08ae8e456c6103839#egg=idiom2topics
 idna==2.10
 Jinja2==2.11.2
 MarkupSafe==1.1.1
-merge-idioms @ file:///Users/eubin/Desktop/Projects/Big/idiom2topics/data/merge_idioms-0.0.1.tar.gz
+merge-idioms @ file:///Users/eubin/Desktop/Projects/Big/idiom2topics/data/merge_idioms-0.0.2.tar.gz
 murmurhash==1.0.5
 numpy==1.19.5
 packaging==20.8
 pathy==0.3.4
 preshed==3.0.5
+py4j==0.10.9
 pydantic==1.6.1
 pyparsing==2.4.7
+pyspark==3.0.1
+python-dateutil==2.8.1
 pytokenizations==0.7.2
 requests==2.25.1
+six==1.15.0
 smart-open==3.0.0
 spacy-nightly==3.0.0rc2
 srsly==2.3.2
+termcolor==1.1.0
 thinc==8.0.0rc2
 tqdm==4.56.0
 typer==0.3.2
 urllib3==1.26.2
 wasabi==0.8.0
-en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.0.0a0/en_core_web_sm-3.0.0a0.tar.gz
-
-pyspark~=3.0.1
