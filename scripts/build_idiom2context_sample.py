@@ -1,10 +1,11 @@
+import csv
 import json
 from typing import List
-from merge_idioms.loaders import TargetIdiomsLoader
+from merge_idioms.loaders import IdiomAltsLoader
 from idiom2topics.builders import SearchBuilder
 from idiom2topics.docs import RefinedSample
 from idiom2topics.config import (
-    RESULTS_SAMPLE_IDIOM2CONTEXT_NDJSON,
+    RESULTS_SAMPLE_IDIOM2CONTEXT_TSV,
 )
 CONTEXT_LENGTH = 1  # this is a big---- problem. I suppose. Should be a port of a discussion.
 SRCH_FIELD = "resp_tokens.keyword"
@@ -29,8 +30,9 @@ def collect_context(idiom: str, source: dict) -> List[str]:
 def main():
     global CONTEXT_LENGTH, SRCH_FIELD
 
-    with open(RESULTS_SAMPLE_IDIOM2CONTEXT_NDJSON, 'w') as fh:
-        for idiom in TargetIdiomsLoader().load():
+    with open(RESULTS_SAMPLE_IDIOM2CONTEXT_TSV, 'w') as fh:
+        tsv_writer = csv.writer(fh, delimiter="\t")
+        for idiom, _ in IdiomAltsLoader().load().items():
             s_builder = SearchBuilder()
             s_builder.construct(text=idiom, field=SRCH_FIELD, size=10000)
             r = s_builder.search.execute()
@@ -40,12 +42,11 @@ def main():
                 sources = (hit['_source'] for hit in hits_list)
                 for source in sources:
                     context = collect_context(idiom, source)
-                    to_write = [idiom, context]
-                    # write in the format of ndjson
-                    fh.write(json.dumps(to_write) + "\n")
+                    to_write = [idiom, json.dumps(context)]
+                    tsv_writer.writerow(to_write)
             else:
-                to_write = [idiom, list()]
-                fh.write(json.dumps(to_write) + "\n")
+                to_write = [idiom, json.dumps(list())]
+                tsv_writer.writerow(to_write)
 
 
 if __name__ == '__main__':

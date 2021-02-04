@@ -31,10 +31,10 @@ CORPUS_SAMPLE_MERGED_REFINED_NDJSON = path.join(CORPUS_SAMPLE_MERGED_DIR,
                                                 "OpenSubtitles.en-pt_br_en_refined_sample.ndjson")
 CORPUS_SAMPLE_SPLITS_FS_MANIFEST_CSV = path.join(CORPUS_SAMPLE_SPLITS_DIR, 'fs_manifest.csv')
 CORPUS_SAMPLE_SPLITS_REFINED_FS_MANIFEST_CSV = path.join(CORPUS_SAMPLE_SPLITS_REFINED_DIR, 'fs_manifest.csv')
-RESULTS_SAMPLE_IDIOM2CONTEXT_NDJSON = path.join(RESULTS_DIR, 'idiom2context_sample.ndjson')
-RESULTS_SAMPLE_IDIOM2TOPICS_TF_TSV = path.join(RESULTS_SAMPLE_IDIOM2TOPICS_TF_DIR, 'idiom2topics_tf_sample.tsv')  # with tf
-RESULTS_SAMPLE_IDIOM2TOPICS_TFIDF_TSV = path.join(RESULTS_SAMPLE_IDIOM2TOPICS_TFIDF_DIR, 'idiom2topics_tfidf_sample.tsv')  # with tf
-RESULTS_SAMPLE_IDIOM2TOPICS_LDA_TSV = path.join(RESULTS_SAMPLE_IDIOM2TOPICS_LDA_DIR, 'idiom2topics_lda_sample.tsv')  # with lda technique
+RESULTS_SAMPLE_IDIOM2CONTEXT_TSV = path.join(RESULTS_DIR, 'idiom2context_sample.tsv')
+RESULTS_SAMPLE_IDIOM2TOPICS_TF_TSV = path.join(RESULTS_DIR, 'idiom2topics_tf_sample.tsv')  # with tf
+RESULTS_SAMPLE_IDIOM2TOPICS_TFIDF_TSV = path.join(RESULTS_DIR, 'idiom2topics_tfidf_sample.tsv')  # with tf
+RESULTS_SAMPLE_IDIOM2TOPICS_LDA_TSV = path.join(RESULTS_DIR, 'idiom2topics_lda_sample.tsv')  # with lda technique
 
 # file split
 SPLIT_SIZE = 900000
