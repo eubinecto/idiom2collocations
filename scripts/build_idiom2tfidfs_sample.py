@@ -10,11 +10,8 @@ from sys import stdout
 from utils import load_idiom2contexts_flattened
 logging.basicConfig(stream=stdout, level=logging.DEBUG)
 
-TOP_N = 50
-
 
 def main():
-    global TOP_N
     # a generator.
     idiom2contexts = load_idiom2contexts_flattened()
     idioms = [idiom for idiom, _ in idiom2contexts]
@@ -31,13 +28,16 @@ def main():
     tfidf_model.save(RESULTS_SAMPLE_IDIOM2TOPICS_TFIDF_MODEL)  # saving the model for reproducibility.
     with open(RESULTS_SAMPLE_IDIOM2TOPICS_TFIDF_NDJSON, 'w') as fh:
         for doc, idiom in zip(tfidf_model[corpus], idioms):
-            topics_sorted = sorted([(dct[idx], freq) for idx, freq in doc],
-                                   key=lambda x: x[1], reverse=True)
-            doc = {
+            tfidfs = [
+                {'term': dct[idx], 'tfidf': tfidf}
+                for idx, tfidf in doc
+            ]
+            tfidfs_sorted = sorted(tfidfs, key=lambda x: x['tfidf'], reverse=True)
+            idiom2topics = {
                 'idiom': idiom,
-                'topics': topics_sorted[:TOP_N]
+                'tfidfs': tfidfs_sorted
             }
-            to_write = json.dumps(doc) + "\n"
+            to_write = json.dumps(idiom2topics) + "\n"
             fh.write(to_write)
 
 
