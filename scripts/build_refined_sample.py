@@ -71,6 +71,9 @@ def build_splits_refined():
     ]
     zipped_paths = zip(split_paths, out_paths)
 
+    # doing this with multiple processes.
+    # if you ignore the previous context at all -> you can make this embarrassingly parallel.
+    # markov assumption...
     with mp.Pool(processes=NUM_PROCS) as p:
         p.map(write_refined, zipped_paths)
 

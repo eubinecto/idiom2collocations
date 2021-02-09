@@ -16,7 +16,6 @@ class Builder:
 
 # first, the interface
 class SearchBuilder(Builder):
-
     # common attribute
     # global constants
     PRE_TAG = "<strong>"
