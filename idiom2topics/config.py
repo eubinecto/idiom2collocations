@@ -54,8 +54,8 @@ CORPUS_SAMPLE_SPLITS_REFINED_FS_MANIFEST_CSV = path.join(CORPUS_SAMPLE_SPLITS_RE
 RESULTS_SAMPLE_IDIOM2CONTEXT_TSV = path.join(RESULTS_DIR, 'idiom2context_sample.tsv')
 RESULTS_SAMPLE_IDIOM2TOPICS_TF_TSV = path.join(RESULTS_DIR,
                                                'idiom2topics_tf_sample.tsv')  # with tf
-RESULTS_SAMPLE_IDIOM2TOPICS_TFIDF_TSV = path.join(RESULTS_SAMPLE_IDIOM2TOPICS_TFIDF_DIR,
-                                                  'idiom2topics_tfidf_sample.tsv')  # with tfidf
+RESULTS_SAMPLE_IDIOM2TOPICS_TFIDF_NDJSON = path.join(RESULTS_SAMPLE_IDIOM2TOPICS_TFIDF_DIR,
+                                                     'idiom2topics_tfidf_sample.ndjson')  # with tfidf
 RESULTS_SAMPLE_IDIOM2TOPICS_TFIDF_MODEL = path.join(RESULTS_SAMPLE_IDIOM2TOPICS_TFIDF_DIR,
                                                     'model')  # tfidf, with the model.
 # for LDA.
