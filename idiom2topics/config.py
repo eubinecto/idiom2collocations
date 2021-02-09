@@ -34,8 +34,11 @@ RESULTS_SAMPLE_IDIOM2TOPICS_TFIDF_DIR = path.join(RESULTS_DIR, 'idiom2topics_tfi
 RESULTS_SAMPLE_IDIOM2TOPICS_LDA_DIR = path.join(RESULTS_DIR, 'idiom2topics_lda_sample')  # with lda
 RESULTS_SAMPLE_IDIOM2TOPICS_LDA_ATTEMPT_DIR = path.join(RESULTS_SAMPLE_IDIOM2TOPICS_LDA_DIR,
                                                          'attempt_{}'.format(now_str))
+RESULTS_SAMPLE_IDIOM2TOPICS_TFIDF_TRAINED_DIR = path.join(RESULTS_SAMPLE_IDIOM2TOPICS_TFIDF_DIR,
+                                                                  'trained')
 RESULTS_SAMPLE_IDIOM2TOPICS_LDA_ATTEMPT_TRAINED_DIR = path.join(RESULTS_SAMPLE_IDIOM2TOPICS_LDA_ATTEMPT_DIR,
                                                                 'trained')
+
 
 # paths to files
 CORPUS_ORIGIN_MERGED_TXT = path.join(CORPUS_ORIGIN_MERGED_DIR, "OpenSubtitles.en-pt_br_en.txt")
@@ -50,9 +53,11 @@ CORPUS_SAMPLE_SPLITS_REFINED_FS_MANIFEST_CSV = path.join(CORPUS_SAMPLE_SPLITS_RE
 # results
 RESULTS_SAMPLE_IDIOM2CONTEXT_TSV = path.join(RESULTS_DIR, 'idiom2context_sample.tsv')
 RESULTS_SAMPLE_IDIOM2TOPICS_TF_TSV = path.join(RESULTS_DIR,
-                                               'idiom2topics_tf_sample_{}.tsv')  # with tf
-RESULTS_SAMPLE_IDIOM2TOPICS_TFIDF_TSV = path.join(RESULTS_DIR,
+                                               'idiom2topics_tf_sample.tsv')  # with tf
+RESULTS_SAMPLE_IDIOM2TOPICS_TFIDF_TSV = path.join(RESULTS_SAMPLE_IDIOM2TOPICS_TFIDF_DIR,
                                                   'idiom2topics_tfidf_sample.tsv')  # with tfidf
+RESULTS_SAMPLE_IDIOM2TOPICS_TFIDF_MODEL = path.join(RESULTS_SAMPLE_IDIOM2TOPICS_TFIDF_DIR,
+                                                    'model')  # tfidf, with the model.
 # for LDA.
 RESULTS_SAMPLE_IDIOM2TOPICS_LDA_ATTEMPT_TSV = path.join(RESULTS_SAMPLE_IDIOM2TOPICS_LDA_ATTEMPT_DIR,
                                                         'idiom2topics_lda_sample.tsv')  # with lda
