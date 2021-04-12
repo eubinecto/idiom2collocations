@@ -1,10 +1,12 @@
 import json
-from typing import List, Dict
+from typing import List, cast
 from functional import seq
 from functional.pipeline import Sequence
+from gensim.corpora import Dictionary
 
 from config import RESULTS_SAMPLE_IDIOM2CONTEXT_TSV, \
-                   RESULTS_SAMPLE_IDIOM2TOPICS_TFIDF_NDJSON
+                   RESULTS_SAMPLE_IDIOM2TOPICS_TFIDF_NDJSON, \
+                   RESULTS_SAMPLE_DICT
 from data import Idiom2Tfidfs
 
 
@@ -14,6 +16,10 @@ def flatten_to_tokens(contexts: List[List[str]]) -> List[str]:
         for context in contexts
         for token in context
     ]
+
+
+def load_dictionary() -> Dictionary:
+    return cast(Dictionary, Dictionary.load(RESULTS_SAMPLE_DICT))
 
 
 def load_idiom2context() -> Sequence:

@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 from typing import Dict, List
 import numpy as np
+from gensim.corpora import Dictionary
+from gensim.models import LdaModel
+
 
 @dataclass
 class Idiom2Tfidfs:
@@ -22,10 +25,20 @@ class Idiom2Tfidfs:
             for token in tokens
         ]
         total = sum(scores)
+        # TODO: I somehow have to encode: the shorter, the better. - isn't this...
+        # what BM25 does?
         return np.tanh(total)  # use hyperbolic tangent
 
 
 @dataclass
 class Idiom2Lda:
+    dct: Dictionary
+    lda_model: LdaModel
+    idiom2lda: Dict[str, List[float]]
+
     def eval_quality(self, idiom: str, tokens: List[str]) -> float:
-        pass
+        bow = self.dct.doc2bow(tokens)
+        bow_lda = self.lda_model.get_document_topics(bow)
+        # wait... so this is not a probability dist. it does not sum to 1.
+        idiom_lda = self.idiom2lda[idiom]
+        # measure the cosine similarity?

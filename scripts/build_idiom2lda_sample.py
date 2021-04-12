@@ -1,6 +1,5 @@
 import csv
 import json
-from gensim.corpora import Dictionary
 from gensim.models import LdaMulticore
 from os import makedirs
 from idiom2topics.config import RESULTS_SAMPLE_IDIOM2TOPICS_LDA_ATTEMPT_TSV,\
@@ -10,11 +9,9 @@ from idiom2topics.config import RESULTS_SAMPLE_IDIOM2TOPICS_LDA_ATTEMPT_TSV,\
     RESULTS_SAMPLE_IDIOM2TOPICS_LDA_ATTEMPT_META_JSON
 import logging
 from sys import stdout
-from functional import seq
 import numpy as np  # you may need this for getting the average..
 import time
-
-from utils import load_idiom2contexts
+from utils import load_idiom2contexts, load_dictionary
 
 logging.basicConfig(stream=stdout, level=logging.DEBUG)
 
@@ -41,7 +38,7 @@ def main():
         for context in contexts
     ]  # flatten out all the docs
     # need all of them to be loaded to build a dictionary.
-    dct = Dictionary(documents=docs)
+    dct = load_dictionary()
     # build bag-of-words representations.
     bows = [
         dct.doc2bow(doc, allow_update=True)
@@ -80,8 +77,8 @@ def main():
     # then, save idiom2topics
     with open(RESULTS_SAMPLE_IDIOM2TOPICS_LDA_ATTEMPT_TSV, 'w') as fh:
         tsv_writer = csv.writer(fh, delimiter="\t")
-        for idiom, docs in idiom2docs:
-            bows = [dct.doc2bow(doc) for doc in docs]
+        for idiom, contexts in idiom2contexts:
+            bows = [dct.doc2bow(context) for context in contexts]
             topic_vectors = [
                 [prob for _, prob in lda_model.get_document_topics(bow, minimum_probability=0)]
                 for bow in bows

@@ -1,22 +1,21 @@
 import json
 from os import makedirs
-from gensim.corpora import Dictionary
 from gensim.models import TfidfModel
 from idiom2topics.config import RESULTS_SAMPLE_IDIOM2TOPICS_TFIDF_NDJSON,\
     RESULTS_SAMPLE_IDIOM2TOPICS_TFIDF_MODEL,\
     RESULTS_SAMPLE_IDIOM2TOPICS_TFIDF_DIR
 import logging
 from sys import stdout
-from utils import load_idiom2contexts_flattened
+from utils import load_idiom2contexts_flattened, load_dictionary
 logging.basicConfig(stream=stdout, level=logging.DEBUG)
 
 
 def main():
     # a generator.
     idiom2contexts = load_idiom2contexts_flattened()
+    dct = load_dictionary()
     idioms = [idiom for idiom, _ in idiom2contexts]
     docs = [context for _, context in idiom2contexts]
-    dct = Dictionary(docs)
     # this is the bows.
     corpus = [
         dct.doc2bow(doc, allow_update=True)
