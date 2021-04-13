@@ -1,9 +1,7 @@
 import csv
 import json
 from typing import List
-from merge_idioms.loaders import IdiomAltsLoader
-from idiom2topics.builders import SearchBuilder
-from idiom2topics.docs import RefinedSample
+from identify_idioms.loaders import IdiomAltsLoader
 from idiom2topics.config import (
     RESULTS_SAMPLE_IDIOM2CONTEXT_TSV,
 )

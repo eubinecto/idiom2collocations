@@ -168,3 +168,22 @@ INFO:gensim.models.ldamodel:-27.044 per-word bound, 138421510.1 perplexity estim
 
 what next? what's the ideal combination for the hyper parameters?
 
+
+## 13th of April
+
+
+You've got to finish this today. 
+
+What's your goal? You have two corpora to extract collocations from.
+1. coca_spok
+2. coca_mag
+
+Extract collocations from those corpora with three different methods: simple count, tfidf and
+That's all you have to do.
+
+
+
+아. symbolic link를 이럴 때 쓰면 되는구나...하하.
+
+single point of access. now, create  data directory at ~ in the server.
+Then, it would be much easier to sync things.

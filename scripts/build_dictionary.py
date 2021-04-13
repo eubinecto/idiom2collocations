@@ -1,3 +1,6 @@
+"""
+I need this so that I don't have to build dictionary every single time I load them.
+"""
 from gensim.corpora import Dictionary
 from utils import load_idiom2context
 from config import RESULTS_SAMPLE_DICT
