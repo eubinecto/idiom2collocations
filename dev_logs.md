@@ -167,3 +167,4 @@ INFO:gensim.models.ldamodel:-27.044 per-word bound, 138421510.1 perplexity estim
 - topic 90 (0.418*"man" + 0.127*"sir" + 0.074*"brother" + 0.039*"anybody" + 0.037*"know"...) seems to be something related masculinity. companion? 
 
 what next? what's the ideal combination for the hyper parameters?
+
