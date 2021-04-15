@@ -187,3 +187,60 @@ That's all you have to do.
 
 single point of access. now, create  data directory at ~ in the server.
 Then, it would be much easier to sync things.
+
+You may want to do this with bigram & trigram support.
+hey well, because what you want is using them directly. You want to find phrases! Right?
+Well, let me think about that, after I'm done with this. After I'm done with near-complete iteration of this!
+
+
+okay, we will continue doing this tomorrow morning.
+
+
+## 14th of April, 2021
+
+what you want is..
+X + idiom
+idiom + X 
+bigram collocations, in each sentence. Those will be the columns of the tsv files!
+
+
+Now how do you do that? 
+
+
+Once you have the data. Test things on... idiomify. 
+Why do we need word2vec, when we have this many data to feed.
+Just use cross entrophy loss.
+
+
+What's the advantage of using word2vec as the label vs. simple one hot vector.
+word2vec is a soft target, so to speak.  -> could compensate for the lack of data.
+one hot vector is a hard target.
+
+As for collocations, you do need stopwords!
+
+
+
+> Okay, so how are we going to implement PMICollocation model, then?
+
+you just fit the model on... idiom2sent data.
+Then, find collocations that include idioms, with the score. There is no reason to reinvent the wheel here.
+
+That's what you are doing. Use the framework!
+
+
+> then you implement tfmodel, tfidfmodel.
+
+As for this... the terms will be tuples. How do we do this with tuples?
+You maybe build a dictionary? As for
+
+> have it be ready to scale up to a larger data.
+
+
+## 15th of April, 2021
+일단 이전까지 했던 것 - 그건 그냥 cluster 인거고.
+이제 우리가 해야하는 건, tf (baseline), tfidf, pmi를 measure로 해서, 
+잠을 자는게 불가능하다 이건. 자면 안된다. 내일 이전까지 마무리할 수 있어야 한다. 코드를.
+일단 collocation추출까지, 저 3개 metric에 대하여 해내는 것이 다음 목표.
+
+이중에서 가장 그럴듯한 것들을 활용하여, idiomfy를 enhance 하는데 사용한다.
+
