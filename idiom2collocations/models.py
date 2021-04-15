@@ -75,12 +75,12 @@ class ClusterModel:
 
 class CollocationModel:
 
-    def __init__(self, idiom2contexts: Sequence):
+    def __init__(self, idiom2bows: Sequence):
         """
         get it as a sequence object.
         """
-        self.idiom2contexts = idiom2contexts
-        self.idioms = set([idiom for idiom, _, _, _, _ in idiom2contexts])  # must be a set.
+        self.idiom2bows = idiom2bows
+        self.idioms = set([idiom for idiom, _, _, _, _ in idiom2bows])  # must be a set.
         # --- these are the target collocations --- #
         self.verb_colls: Dict[str, List[Tuple[tuple, Union[int, float]]]] = dict()
         self.noun_colls: Dict[str, List[Tuple[tuple, Union[int, float]]]] = dict()
@@ -97,7 +97,27 @@ class CollocationModel:
 class TFCollModel(CollocationModel):
 
     def fit(self):
-        pass
+        for idiom, verb_bow, noun_bow, adj_bow, adv_bow in self.idiom2bows:
+            self.verb_colls[idiom] = sorted(
+                [(lemma, count) for lemma, count in verb_bow.items()],
+                key=lambda x: x[1],
+                reverse=True
+            )
+            self.noun_colls[idiom] = sorted(
+                [(lemma, count) for lemma, count in noun_bow.items()],
+                key=lambda x: x[1],
+                reverse=True
+            )
+            self.adv_colls[idiom] = sorted(
+                [(lemma, count) for lemma, count in adj_bow.items()],
+                key=lambda x: x[1],
+                reverse=True
+            )
+            self.adj_colls[idiom] = sorted(
+                [(lemma, count) for lemma, count in adv_bow.items()],
+                key=lambda x: x[1],
+                reverse=True
+            )
 
 
 class TFIDFCollModel(CollocationModel):
