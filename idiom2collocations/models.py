@@ -1,4 +1,5 @@
-from typing import List, Tuple, Generator, Dict, Union
+import math
+from typing import List, Tuple, Generator, Dict, Union, Set
 from functional.pipeline import Sequence
 from gensim.corpora import Dictionary
 from gensim.models import TfidfModel
@@ -30,7 +31,7 @@ class ClusterModel:
         """
         just simple frequency counts of the tuples.
         """
-        for idiom, x_idioms, idiom_xs, xx_idioms, idiom_xxs, xxx_idioms, idiom_xxxs in self.idiom2ngrams():
+        for idiom, x_idioms, idiom_xs, xx_idioms, idiom_xxs, xxx_idioms, idiom_xxxs in self.clusters():
             self.x_idiom[idiom] = FreqDist(x_idioms).most_common(len(x_idioms))
             self.idiom_x[idiom] = FreqDist(idiom_xs).most_common(len(idiom_xs))
             self.xx_idiom[idiom] = FreqDist(xx_idioms).most_common(len(xx_idioms))
@@ -38,7 +39,7 @@ class ClusterModel:
             self.xxx_idiom[idiom] = FreqDist(xxx_idioms).most_common(len(xxx_idioms))
             self.idiom_xxx[idiom] = FreqDist(idiom_xxxs).most_common(len(idiom_xxxs))
 
-    def idiom2ngrams(self) -> Generator[List[Tuple[str, list, list, list, list]], None, None]:
+    def clusters(self) -> Generator[List[Tuple[str, list, list, list, list]], None, None]:
         for idiom, sents in self.idiom2sent.group_by_key():
             sents: List[List[str]]
             # these are the ngrams to collect.
@@ -82,10 +83,10 @@ class CollocationModel:
         self.idiom2bows = idiom2bows
         self.idioms = set([idiom for idiom, _, _, _, _ in idiom2bows])  # must be a set.
         # --- these are the target collocations --- #
-        self.verb_colls: Dict[str, List[Tuple[tuple, Union[int, float]]]] = dict()
-        self.noun_colls: Dict[str, List[Tuple[tuple, Union[int, float]]]] = dict()
-        self.adj_colls: Dict[str, List[Tuple[tuple, Union[int, float]]]] = dict()
-        self.adv_colls: Dict[str, List[Tuple[tuple, Union[int, float]]]] = dict()
+        self.verb_colls: Dict[str, List[Tuple[str, Union[int, float]]]] = dict()
+        self.noun_colls: Dict[str, List[Tuple[str, Union[int, float]]]] = dict()
+        self.adj_colls: Dict[str, List[Tuple[str, Union[int, float]]]] = dict()
+        self.adv_colls: Dict[str, List[Tuple[str, Union[int, float]]]] = dict()
 
     def fit(self):
         """
@@ -97,7 +98,7 @@ class CollocationModel:
 class TFCollModel(CollocationModel):
 
     def fit(self):
-        for idiom, verb_bow, noun_bow, adj_bow, adv_bow in self.idiom2bows:
+        for idiom, _, verb_bow, noun_bow, adj_bow, adv_bow in self.idiom2bows:
             self.verb_colls[idiom] = sorted(
                 [(lemma, count) for lemma, count in verb_bow.items()],
                 key=lambda x: x[1],
@@ -122,8 +123,51 @@ class TFCollModel(CollocationModel):
 
 class TFIDFCollModel(CollocationModel):
 
+    def __init__(self, idiom2bows: Sequence):
+        super().__init__(idiom2bows)
+        # build a dictionary
+        docs = [
+            list(verb_bow.keys()) + list(noun_bow.keys()) + list(adj_bow.keys()) + list(adv_bow.keys())
+            for _, _, verb_bow, noun_bow, adj_bow, adv_bow in self.idiom2bows
+        ]
+        # build a dictionary. this will be used for Tfidf gensim model!
+        self.dct = Dictionary(docs)
+
     def fit(self):
-        pass
+        # the pos_co documents are here.
+        verb_docs = [
+            [(self.dct.token2id[lemma], count) for lemma, count in verb_bow.items()]
+            for _, verb_bow, _, _, _ in self.idiom2bows
+        ]
+        noun_docs = [
+            [(self.dct.token2id[lemma], count) for lemma, count in noun_bow.items()]
+            for _, _, noun_bow, _, _ in self.idiom2bows
+        ]
+        adj_docs = [
+            [(self.dct.token2id[lemma], count) for lemma, count in adj_bow.items()]
+            for _, _, _, adj_bow, _ in self.idiom2bows
+        ]
+        adv_docs = [
+            [(self.dct.token2id[lemma], count) for lemma, count in adv_bow.items()]
+            for _, _, _, _, adv_bow in self.idiom2bows
+        ]
+        verb_tfidf = TfidfModel(verb_docs, smartirs='ntc')
+        noun_tfidf = TfidfModel(noun_docs, smartirs='ntc')
+        adj_tfidf = TfidfModel(adj_docs, smartirs='ntc')
+        adv_tfidf = TfidfModel(adv_docs, smartirs='ntc')
+        for idiom, res in zip(self.idioms, verb_tfidf[verb_docs]):
+            self.update(self.verb_colls, idiom, res)
+        for idiom, res in zip(self.idioms, noun_tfidf[noun_docs]):
+            self.update(self.noun_colls, idiom, res)
+        for idiom, res in zip(self.idioms, adj_tfidf[adj_docs]):
+            self.update(self.adj_colls, idiom, res)
+        for idiom, res in zip(self.idioms, adv_tfidf[adv_docs]):
+            self.update(self.adv_colls, idiom, res)
+
+    def update(self, coll_dict: dict, idiom: str, res: List[Tuple[int, float]]):
+        coll_dict[idiom] = sorted([(self.dct[idx], tfidf) for idx, tfidf in res],
+                                    key=lambda x: x[1],
+                                    reverse=True)
 
 
 class PMICollModel(CollocationModel):
@@ -131,25 +175,102 @@ class PMICollModel(CollocationModel):
     Point-wise Mutual Information.
     Needs some hyper parameter tuning.
     """
-    def fit(self):
-        # TODO: fix this.
-        bigram_coll_finder: BigramCollocationFinder = BigramCollocationFinder.from_documents(self.get_docs())
-        bigram_measures = BigramAssocMeasures()
-        bigram_coll_finder.apply_freq_filter(4)
-        # look, this  will take ages, my god.
-        for bigram, score in tqdm(bigram_coll_finder.score_ngrams(bigram_measures.pmi)):
-            if bigram[0] in self.idioms:
-                idiom = bigram[0]
-                idiom_x = (idiom, bigram[1], score)
-                print(idiom_x)
-                self.idiom_x_colls[idiom] = self.idiom_x_colls.get(idiom, list()).append(idiom_x)
-            if bigram[1] in self.idioms:
-                idiom = bigram[1]
-                x_idiom = (bigram[0], idiom, score)
-                print(x_idiom)
-                self.x_idiom_colls[idiom] = self.x_idiom_colls.get(idiom, list()).append(x_idiom)
 
-    def get_docs(self) -> Generator[List[str], None, None]:
-        for idiom, sent in tqdm(self.idiom2contexts):
-            sent[sent.index("[IDIOM]")] = idiom
-            yield sent
+    def __init__(self, idiom2bows: Sequence, idiom2lemma2pos: Sequence):
+        super().__init__(idiom2bows)
+        self.idiom2lemma2pos = idiom2lemma2pos  # need this to compute the occurrences.
+        self.idiom2count: Dict[str, int] = dict()
+        self.verb2count: Dict[str, int] = dict()
+        self.noun2count: Dict[str, int] = dict()
+        self.adj2count: Dict[str, int] = dict()
+        self.adv2count: Dict[str, int] = dict()
+        # the size of the entire vocab
+        self.verb_n: int = 0
+        self.noun_n: int = 0
+        self.adj_n: int = 0
+        self.adv_n: int = 0
+
+    def fit(self):
+        # compute the occurrences & vocab size.
+        for idiom, lemma2pos in tqdm(self.idiom2lemma2pos):
+            self.idiom2count[idiom] = self.idiom2count.get(idiom, 0) + 1
+            for lemma, pos in lemma2pos:
+                if lemma == "[IDIOM]":
+                    continue
+                if pos == "VERB":
+                    self.verb2count[lemma] = self.verb2count.get(lemma, 0) + 1
+                    self.verb_n += 1
+                elif pos == "NOUN":
+                    self.noun2count[lemma] = self.noun2count.get(lemma, 0) + 1
+                    self.noun_n += 1
+                elif pos == "ADJ":
+                    self.adj2count[lemma] = self.adj2count.get(lemma, 0) + 1
+                    self.adj_n += 1
+                elif pos == "ADV":
+                    self.adv2count[lemma] = self.adv2count.get(lemma, 0) + 1
+                    self.adv_n += 1
+        # compute the oc-occurrences
+        idiom_verb_co = self.idiom_lemma_co('VERB')
+        idiom_noun_co = self.idiom_lemma_co('NOUN')
+        idiom_adj_co = self.idiom_lemma_co('ADJ')
+        idiom_adv_co = self.idiom_lemma_co('ADV')
+                
+        # pos_co for the entire thing.  (lemma: count)
+        # now compute the colls
+        for idiom in self.idioms:
+            verb_co = idiom_verb_co.get(idiom, dict())
+            assert set(verb_co.keys()).issubset(set(self.verb2count.keys()))
+            noun_co = idiom_noun_co.get(idiom, dict())
+            assert set(noun_co.keys()).issubset(set(self.noun2count.keys()))
+            adj_co = idiom_adj_co.get(idiom, dict())
+            assert set(adj_co.keys()).issubset(set(self.adj2count.keys()))
+            adv_co = idiom_adv_co.get(idiom, dict())
+            assert set(adv_co.keys()).issubset(set(self.adv2count.keys()))
+            self.verb_colls[idiom] = self.colls(idiom_verb_co.get(idiom, dict()), self.idiom2count[idiom],
+                                                self.verb2count, self.verb_n)
+            self.noun_colls[idiom] = self.colls(idiom_noun_co.get(idiom, dict()), self.idiom2count[idiom],
+                                                self.noun2count, self.noun_n)
+            self.adj_colls[idiom] = self.colls(idiom_adj_co.get(idiom, dict()), self.idiom2count[idiom],
+                                               self.adj2count, self.adj_n)
+            self.adv_colls[idiom] = self.colls(idiom_adv_co.get(idiom, dict()), self.idiom2count[idiom],
+                                               self.adv2count, self.adv_n)
+    
+    def idiom_lemma_co(self, pos: str) -> Dict[str, Dict[str, int]]:
+        idiom_lemma_co = dict()
+        if pos == "VERB":
+            idx = 1
+        elif pos == "NOUN":
+            idx = 2
+        elif pos == "ADJ":
+            idx = 3
+        elif pos == "ADV":
+            idx = 4
+        for idiom, pos_bows in tqdm(self.idiom2bows.map(lambda x: (x[0], x[idx])).group_by_key()):
+            for pos_bow in pos_bows:
+                for lemma, count in pos_bow.items():
+                    bow_so_far = idiom_lemma_co.get(idiom, dict())
+                    bow_so_far[lemma] = bow_so_far.get(lemma, 0) + count
+                    idiom_lemma_co[idiom] = bow_so_far
+        return idiom_lemma_co
+    
+    def colls(self, pos_co: Dict[str, int], idiom_count: int, pos2count: dict, n: int):
+        return sorted([
+            (lemma, self.pmi(p_x_y=count / n,  # this is the pos_co-occurrence!
+                             p_x=idiom_count / n,
+                             p_y=pos2count[lemma] / n))
+            for lemma, count in pos_co.items()],
+            key=lambda x: x[1],
+            reverse=True)
+    
+    @staticmethod
+    def pmi(p_x_y: float, p_x: float, p_y: float) -> float:
+        """
+        point-wise mutual information
+        I(x,y) = log(p(x,y)/(p(x)p(y)))
+        = log(p(x, y)) - log(p(x) * p(y))
+        = log(p(x, y)) - (log(p(x)) + log(P(y)))
+        """
+        log_p_x_y = math.log(p_x_y, 2)
+        log_p_x = math.log(p_x, 2)
+        log_p_y = math.log(p_y, 2)
+        return log_p_x_y - (log_p_x + log_p_y)

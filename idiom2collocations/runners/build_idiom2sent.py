@@ -1,6 +1,6 @@
 """
 idiom2contexts -> raw, tokenized sents.
-what if two idioms co-occur? Didn't think of that, sadly.
+what if two idioms pos_co-occur? Didn't think of that, sadly.
 first_of_all	"[[""[IDIOM]"", ""X""], [""certainly"", ""ADV""], [""grateful"", ""ADJ""], [""president"", ""NOUN""], [""leadership"", ""NOUN""], [""advocate"", ""VERB""], [""set_the_table"", ""VERB""], [""reality"", ""NOUN""], [""tax"", ""NOUN""], [""president"", ""NOUN""], [""propose"", ""VERB""], [""plan"", ""NOUN""], [""year"", ""NOUN""], [""ago"", ""ADV""]]"
 set_the_table	"[[""[IDIOM]"", ""X""], [""certainly"", ""ADV""], [""grateful"", ""ADJ""], [""president"", ""NOUN""], [""leadership"", ""NOUN""], [""advocate"", ""VERB""], [""[IDIOM]"", ""X""], [""reality"", ""NOUN""], [""tax"", ""NOUN""], [""president"", ""NOUN""], [""propose"", ""VERB""], [""plan"", ""NOUN""], [""year"", ""NOUN""], [""ago"", ""ADV""]]"
 

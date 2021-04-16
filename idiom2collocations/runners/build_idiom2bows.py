@@ -2,6 +2,7 @@
 idiom, verb_context, noun_context, adj_context, adv_context
 to be used for collocation extraction.
 serialise a count dictionary, rather than the full list. That makes more sense.
+We've got this from within the window.
 """
 import csv
 import json

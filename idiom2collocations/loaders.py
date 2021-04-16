@@ -26,6 +26,7 @@ def load_idiom2bows() -> Sequence:
                           json.loads(row[4])))
 
 
+# we are not doing clusters, no.
 def load_idiom2clusters() -> Sequence:
     return seq.csv(IDIOM2CLUSTERS_TSV, delimiter="\t") \
         .map(lambda row: (row[0],

@@ -1,24 +1,28 @@
 import argparse
 import csv
 import json
-from idiom2collocations.loaders import load_idiom2bows
+from idiom2collocations.loaders import load_idiom2bows, load_idiom2lemma2pos
 from idiom2collocations.models import TFCollModel, PMICollModel, TFIDFCollModel
 from idiom2collocations.paths import (
     IDIOM2COLLS_TF_TSV,
     IDIOM2COLLS_TFIDF_TSV,
     IDIOM2COLLS_PMI_TSV
 )
+import logging
+from sys import stdout
+logging.basicConfig(stream=stdout, level=logging.INFO)
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_type",
                         type=str,
-                        default="tf")
+                        default="pmi")
 
     args = parser.parse_args()
     model_type: str = args.model_type
     idiom2bows = load_idiom2bows()
+    idiom2lemma2pos = load_idiom2lemma2pos()
     # --- instantiate the model and tsv path --- #
     if model_type == "tf":
         model = TFCollModel(idiom2bows)
@@ -27,8 +31,7 @@ def main():
         model = TFIDFCollModel(idiom2bows)
         tsv_path = IDIOM2COLLS_TFIDF_TSV
     elif model_type == "pmi":
-        # what other models do we have..?
-        model = PMICollModel(idiom2bows)
+        model = PMICollModel(idiom2bows, idiom2lemma2pos)
         tsv_path = IDIOM2COLLS_PMI_TSV
     else:
         raise ValueError("Invalid model_type: " + model_type)
