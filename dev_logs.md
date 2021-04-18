@@ -254,10 +254,34 @@ into_thin_air   [["vanish", 44], ["disappear", 28], ["go", 4], ["spend", 3], ["e
 into_thin_air	"[[""come"", 1.0]]"	"[[""rub"", 0.8183941240830871], [""punch"", 0.5746573393477863]]"	[]	"[[""kind"", 1.0]]"
 ```
 
+Why are some words truncated? That's weird. I don't understand what's going on here.
+
+
 
 ## 18th of April, 2021
 
 
-pmi, t-score, pearson's test.
+pmi, t-score, pearson's test. 뭐... 여러가지가 있을 수 있겠지만.
+지금은 tf-idf와 pmi에만 집중하자. 나머지는 report의 related work에서 다루어도 충분할 것. 이제는 시간이 없기 때문에, wrap-up을 해야한다.
 
 These are all measures for finding statistical signinificance.
+
+
+아, 이게 문제다. 이것저것 다해보다가, 결국엔 시간을 낭비하게 되고 mediocre한 결과로 이어지는 건가?
+아니면 이 결과도 괜찮다고 생각해야 하나? 애초에 방향성을 딱 잡고 갈수는 없었던 건가?
+
+
+다시 tfidf로 돌아와서. 징후를 살펴보자.
+1. tf에는 있는 단어들이, tfidf에도 있어야 하는데 (tf가 아무리작더라도), tfidf에는 몇몇의 단어만 존재한다.
+  - 즉 어떤 단어들은 필터링이 되어버렸다. (아니면...아. 알겠다. )
+
+
+가장 높은 값을 가진 것들이... 1.0가 최고점이다. 왜 그런거지?
+
+tfidf가 원래 최고점이 그런건가? 그렇게 되는건가?
+
+아... len(documents) 와 len(idioms)가 같아야함. 그러고보니 group by를 사용을 안했었네. 이걸 사용을 하자.
+
+
+collocation을 어떻게 평가할거지? Ground truth가 없는데. 평가의 방법이 필요하다. 내가 직접.... 데이터를 구축해야할수도 있다.
+몇몇 idiom 별로, 사전에 등재된 예문을 가지고 오자. 그 사전에

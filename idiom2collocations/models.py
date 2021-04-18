@@ -1,16 +1,11 @@
 import math
-from typing import List, Tuple, Generator, Dict, Union, Set
+from functools import reduce
+from typing import List, Tuple, Generator, Dict, Union
 from functional.pipeline import Sequence
 from gensim.corpora import Dictionary
 from gensim.models import TfidfModel
 from tqdm import tqdm
 from nltk import FreqDist
-from nltk.collocations import (
-    BigramCollocationFinder,
-    BigramAssocMeasures,
-    TrigramCollocationFinder,
-    TrigramAssocMeasures
-)
 from nltk.stem import WordNetLemmatizer
 
 
@@ -125,44 +120,59 @@ class TFIDFCollModel(CollocationModel):
 
     def __init__(self, idiom2bows: Sequence):
         super().__init__(idiom2bows)
-        # build a dictionary
+
+        # get all the docs to build a dictionary
         docs = [
             list(verb_bow.keys()) + list(noun_bow.keys()) + list(adj_bow.keys()) + list(adv_bow.keys())
-            for _, _, verb_bow, noun_bow, adj_bow, adv_bow in self.idiom2bows
+            for _, verb_bow, noun_bow, adj_bow, adv_bow in self.idiom2bows
         ]
         # build a dictionary. this will be used for Tfidf gensim model!
         self.dct = Dictionary(docs)
 
+    def docs(self, pos: str) -> List[List[Tuple[int, int]]]:
+        if pos == "VERB":
+            idx = 1
+        elif pos == "NOUN":
+            idx = 2
+        elif pos == "ADJ":
+            idx = 3
+        elif pos == "ADV":
+            idx = 4
+        else:
+            raise ValueError
+        # note the the docs are sorted by idioms.
+        docs = self.idiom2bows.map(lambda x: (x[0], x[idx]))\
+                              .group_by_key()\
+                              .sorted(key=lambda x: x[0])\
+                              .map(lambda x: x[1])
+        # translate this into the bow's format.
+        docs_reduced = (
+            reduce(lambda a, b: a.update(b) or a, bows)
+            for bows in docs
+        )
+        return [
+            [(self.dct.token2id[lemma], count) for lemma, count in bow.items()]
+            for bow in docs_reduced
+        ]
+
     def fit(self):
-        # the pos_co documents are here.
-        verb_docs = [
-            [(self.dct.token2id[lemma], count) for lemma, count in verb_bow.items()]
-            for _, verb_bow, _, _, _ in self.idiom2bows
-        ]
-        noun_docs = [
-            [(self.dct.token2id[lemma], count) for lemma, count in noun_bow.items()]
-            for _, _, noun_bow, _, _ in self.idiom2bows
-        ]
-        adj_docs = [
-            [(self.dct.token2id[lemma], count) for lemma, count in adj_bow.items()]
-            for _, _, _, adj_bow, _ in self.idiom2bows
-        ]
-        adv_docs = [
-            [(self.dct.token2id[lemma], count) for lemma, count in adv_bow.items()]
-            for _, _, _, _, adv_bow in self.idiom2bows
-        ]
+        # group by, and fit the collocations for verbs
+        idiom_keys = sorted(list(self.idioms))
+        verb_docs = self.docs("VERB")
+        noun_docs = self.docs("NOUN")
+        adj_docs = self.docs("ADJ")
+        adv_docs = self.docs("ADV")
+        # fit the models.
         verb_tfidf = TfidfModel(verb_docs, smartirs='ntc')
         noun_tfidf = TfidfModel(noun_docs, smartirs='ntc')
         adj_tfidf = TfidfModel(adj_docs, smartirs='ntc')
         adv_tfidf = TfidfModel(adv_docs, smartirs='ntc')
-        for idiom, res in zip(self.idioms, verb_tfidf[verb_docs]):
-            self.update(self.verb_colls, idiom, res)
-        for idiom, res in zip(self.idioms, noun_tfidf[noun_docs]):
-            self.update(self.noun_colls, idiom, res)
-        for idiom, res in zip(self.idioms, adj_tfidf[adj_docs]):
-            self.update(self.adj_colls, idiom, res)
-        for idiom, res in zip(self.idioms, adv_tfidf[adv_docs]):
-            self.update(self.adv_colls, idiom, res)
+        for idiom, res_verb, res_noun, res_adj, res_adv in \
+                zip(idiom_keys, verb_tfidf[verb_docs], noun_tfidf[noun_docs], adj_tfidf[adj_docs], adv_tfidf[adv_docs]):
+            self.update(self.verb_colls, idiom, res_verb)
+            self.update(self.noun_colls, idiom, res_noun)
+            self.update(self.adj_colls, idiom, res_adj)
+            self.update(self.adv_colls, idiom, res_adv)
 
     def update(self, coll_dict: dict, idiom: str, res: List[Tuple[int, float]]):
         coll_dict[idiom] = sorted([(self.dct[idx], tfidf) for idx, tfidf in res],
@@ -282,3 +292,5 @@ class PMICollModel(CollocationModel):
         log_p_x = math.log(p_x, 2)
         log_p_y = math.log(p_y, 2)
         return log_p_x_y - (log_p_x + log_p_y)
+
+

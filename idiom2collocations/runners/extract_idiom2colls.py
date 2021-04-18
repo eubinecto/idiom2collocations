@@ -17,10 +17,15 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_type",
                         type=str,
-                        default="pmi")
+                        default="tfidf")
+    # to be used for the case of using pmi
+    parser.add_argument("--lower_bound",
+                        type=int,
+                        default=3)
 
     args = parser.parse_args()
     model_type: str = args.model_type
+    lower_bound: int = args.lower_bound
     idiom2bows = load_idiom2bows()
     idiom2lemma2pos = load_idiom2lemma2pos()
     # --- instantiate the model and tsv path --- #
@@ -31,7 +36,8 @@ def main():
         model = TFIDFCollModel(idiom2bows)
         tsv_path = IDIOM2COLLS_TFIDF_TSV
     elif model_type == "pmi":
-        model = PMICollModel(idiom2bows, idiom2lemma2pos, lower_bound=3)
+        # you can apply a lower bound, as for pmi.
+        model = PMICollModel(idiom2bows, idiom2lemma2pos, lower_bound=lower_bound)
         tsv_path = IDIOM2COLLS_PMI_TSV
     else:
         raise ValueError("Invalid model_type: " + model_type)
