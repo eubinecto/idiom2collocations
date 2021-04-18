@@ -244,3 +244,20 @@ You maybe build a dictionary? As for
 
 이중에서 가장 그럴듯한 것들을 활용하여, idiomfy를 enhance 하는데 사용한다.
 
+
+## 16th of April, 2021
+
+```commandline
+# tf
+into_thin_air   [["vanish", 44], ["disappear", 28], ["go", 4], ["spend", 3], ["evaporate", 3], ["reinvent", 3], ["mean", 3], ["know", 3], ["take", 3], ["call", 3], ["expire", 2], ["continue", 2], ["believe", 2], ["write", 2], ["want", 2], ["split", 2], ["read", 2], ["face", 2], ["stop", 2], ["look", 2], ["dissolve", 2], ["find", 2], ["see", 2]]
+# tfidf - there is something wrong. where did the word "vanish" go?
+into_thin_air	"[[""come"", 1.0]]"	"[[""rub"", 0.8183941240830871], [""punch"", 0.5746573393477863]]"	[]	"[[""kind"", 1.0]]"
+```
+
+
+## 18th of April, 2021
+
+
+pmi, t-score, pearson's test.
+
+These are all measures for finding statistical signinificance.

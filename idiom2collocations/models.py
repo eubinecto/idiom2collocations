@@ -176,7 +176,7 @@ class PMICollModel(CollocationModel):
     Needs some hyper parameter tuning.
     """
 
-    def __init__(self, idiom2bows: Sequence, idiom2lemma2pos: Sequence):
+    def __init__(self, idiom2bows: Sequence, idiom2lemma2pos: Sequence, lower_bound: int = 0):
         super().__init__(idiom2bows)
         self.idiom2lemma2pos = idiom2lemma2pos  # need this to compute the occurrences.
         self.idiom2count: Dict[str, int] = dict()
@@ -189,6 +189,8 @@ class PMICollModel(CollocationModel):
         self.noun_n: int = 0
         self.adj_n: int = 0
         self.adv_n: int = 0
+        # the lower bound of the frequency
+        self.lower_bound = lower_bound
 
     def fit(self):
         # compute the occurrences & vocab size.
@@ -234,8 +236,11 @@ class PMICollModel(CollocationModel):
                                                self.adj2count, self.adj_n)
             self.adv_colls[idiom] = self.colls(idiom_adv_co.get(idiom, dict()), self.idiom2count[idiom],
                                                self.adv2count, self.adv_n)
-    
+
     def idiom_lemma_co(self, pos: str) -> Dict[str, Dict[str, int]]:
+        """
+        count idiom-lemma co-occurrences.
+        """
         idiom_lemma_co = dict()
         if pos == "VERB":
             idx = 1
@@ -258,7 +263,10 @@ class PMICollModel(CollocationModel):
             (lemma, self.pmi(p_x_y=count / n,  # this is the pos_co-occurrence!
                              p_x=idiom_count / n,
                              p_y=pos2count[lemma] / n))
-            for lemma, count in pos_co.items()],
+            for lemma, count in pos_co.items()
+            # should be more frequent than the lower bound.
+            if count > self.lower_bound
+            ],
             key=lambda x: x[1],
             reverse=True)
     

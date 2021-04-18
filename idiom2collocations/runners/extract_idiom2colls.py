@@ -31,7 +31,7 @@ def main():
         model = TFIDFCollModel(idiom2bows)
         tsv_path = IDIOM2COLLS_TFIDF_TSV
     elif model_type == "pmi":
-        model = PMICollModel(idiom2bows, idiom2lemma2pos)
+        model = PMICollModel(idiom2bows, idiom2lemma2pos, lower_bound=3)
         tsv_path = IDIOM2COLLS_PMI_TSV
     else:
         raise ValueError("Invalid model_type: " + model_type)
@@ -42,7 +42,7 @@ def main():
     # then, save the collocations as tsv
     with open(tsv_path, 'w') as fh:
         tsv_writer = csv.writer(fh, delimiter="\t")
-        for idiom in model.idioms:
+        for idiom in sorted(model.idioms):
             to_write = [
                 idiom,
                 json.dumps(model.verb_colls[idiom]),
