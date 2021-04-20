@@ -249,6 +249,7 @@ You maybe build a dictionary? As for
 
 ```commandline
 # tf
+# what...?
 into_thin_air   [["vanish", 44], ["disappear", 28], ["go", 4], ["spend", 3], ["evaporate", 3], ["reinvent", 3], ["mean", 3], ["know", 3], ["take", 3], ["call", 3], ["expire", 2], ["continue", 2], ["believe", 2], ["write", 2], ["want", 2], ["split", 2], ["read", 2], ["face", 2], ["stop", 2], ["look", 2], ["dissolve", 2], ["find", 2], ["see", 2]]
 # tfidf - there is something wrong. where did the word "vanish" go?
 into_thin_air	"[[""come"", 1.0]]"	"[[""rub"", 0.8183941240830871], [""punch"", 0.5746573393477863]]"	[]	"[[""kind"", 1.0]]"
@@ -284,4 +285,34 @@ tfidf가 원래 최고점이 그런건가? 그렇게 되는건가?
 
 
 collocation을 어떻게 평가할거지? Ground truth가 없는데. 평가의 방법이 필요하다. 내가 직접.... 데이터를 구축해야할수도 있다.
-몇몇 idiom 별로, 사전에 등재된 예문을 가지고 오자. 그 사전에
+몇몇 idiom 별로, 사전에 등재된 예문을 가지고 오자. (e.g. fair and square.)
+
+randomly sampled idioms 100개에 대하여, authoritative한 사전에서 예문을 가지고 올 것. 그 예문 안에 들어있는 단어를 가장 많이 
+포함하고 있는 쪽이 승리. 일단, 이거는 여기까지 해보고.
+다음으로 idiom2vec을 훈련하러 가자.
+
+
+
+## 20th of April
+
+So the problem was, '[IDIOM]' token is occassically recognized as a punctuation.
+
+
+```commandline
+[('and', 'CCONJ'), ('because', 'SCONJ'), ('it', 'PRON'), ('be', 'VERB'), ('[IDIOM]', 'PROPN'), ('Major', 'PROPN'), ('League', 'PROPN'), ('Baseball', 'PROPN'), ('and', 'CCONJ'), ('the', 'DET'), ('player', 'NOUN'), ("'s", 'PART'), ('association', 'NOUN'), ('say', 'VERB'), ('they', 'PRON'), ('do', 'AUX'), ("n't", 'PART'), ('know', 'VERB'), ('about', 'ADP'), ('it', 'PRON'), ('until', 'ADP'), ('that', 'DET'), ("'s", 'PART'), ('baloney', 'NOUN')]
+```
+
+when idioms are proper nouns... that's the problem. 
+
+Let's not care about this then, okay? This is not something you should be spending time with at this point.
+
+Keep it as simple as possible. Take care of refining the corpus later.
+
+
+What do you need to do now?
+
+Data after stopwords filtering.  
+
+That's what you need. 
+
+

@@ -17,7 +17,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_type",
                         type=str,
-                        default="tfidf")
+                        default="pmi")
     # to be used for the case of using pmi
     parser.add_argument("--lower_bound",
                         type=int,
@@ -48,7 +48,7 @@ def main():
     # then, save the collocations as tsv
     with open(tsv_path, 'w') as fh:
         tsv_writer = csv.writer(fh, delimiter="\t")
-        for idiom in sorted(model.idioms):
+        for idiom in sorted(model.idiom_keys):
             to_write = [
                 idiom,
                 json.dumps(model.verb_colls[idiom]),

@@ -2,6 +2,7 @@
 Corpora to be used for training.
 """
 import json
+from json.decoder import JSONDecodeError
 from typing import Generator, List
 
 
@@ -29,5 +30,9 @@ class Opensub(Corpus):
     def __iter__(self) -> Generator[List[str], None, None]:
         with open(self.train_ndjson_path, 'r') as fh:
             for line in fh:
-                sent = json.loads(line)
+                try:
+                    sent = json.loads(line)
+                except JSONDecodeError:
+                    print("invalid line:" + line)
+                    continue
                 yield sent

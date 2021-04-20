@@ -21,20 +21,23 @@ RESRCS_DIR = path.join(PROJECT_LIB_DIR, "resources")
 IDIOMS_DIR = path.join(CORPORA_DIR, "idioms")
 
 
-# files - idioms
+# files - idiom_keys
 IDIOM2SENT_TSV = path.join(IDIOMS_DIR, "idiom2sent.tsv")  # just raw sentences, wherein the idiom appears in.
-IDIOM2BOWS_TSV = path.join(IDIOMS_DIR, "idiom2bows.tsv")  # lemmatised. cleaned. stopwords are removed.
-IDIOM2LEMMA2POS_TSV = path.join(IDIOMS_DIR, "idiom2lemma2pos.tsv")
-# files - data
-IDIOM2CLUSTERS_TSV = path.join(PROJECT_DATA_DIR, "idiom2clusters.tsv")  # idiom, x_idiom, idiom_x, xx_idiom, idiom_xx
+IDIOM2BOWS_TSV = path.join(IDIOMS_DIR, "idiom2bows.tsv")  # lemmatised. cleaned. stopwords may have been removed. depends.
+IDIOM2LEMMA2POS_TSV = path.join(IDIOMS_DIR, "idiom2lemma2pos.tsv")  # lemmatised, cleaned. stopwords are removed.
+IDIOM2LEMMA2POS_REMOVED_TSV = path.join(IDIOMS_DIR, "idiom2lemma2pos_removed.tsv")  # lemmatised, cleaned. stopwords are removed.
+
+
+# files - data. The extracted collocations will be stored here.
 IDIOM2COLLS_TF_TSV = path.join(PROJECT_DATA_DIR, "idiom2colls_tf.tsv")  # with point-wise mutual inclusive.
 IDIOM2COLLS_TFIDF_TSV = path.join(PROJECT_DATA_DIR, "idiom2colls_tfidf.tsv")  # with point-wise mutual inclusive.
 IDIOM2COLLS_PMI_TSV = path.join(PROJECT_DATA_DIR, "idiom2colls_pmi.tsv")  # with point-wise mutual inclusive.
+LEMMA2IDF_TSV = path.join(PROJECT_DATA_DIR, "lemma2idf.tsv")
 
 # files - coca_spok
 COCA_SPOK_TRAIN_NDJSON = path.join(COCA_SPOK_DIR, 'train.ndjson')
 
-# files - coca_mag
+# files - coca_mag - may not be able to use them.
 COCA_MAG_TRAIN_NDJSON = path.join(COCA_MAG_DIR, 'train.ndjson')
 
 # files - opensub

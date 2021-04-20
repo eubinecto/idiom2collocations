@@ -9,6 +9,7 @@ import json
 from multiprocessing import Pool
 from typing import Tuple, List
 from nltk import ngrams
+from spacy.lang.en import STOP_WORDS
 from tqdm import tqdm
 from idiom2collocations.loaders import load_idiom2lemma2pos
 from idiom2collocations.paths import IDIOM2BOWS_TSV
@@ -17,7 +18,7 @@ WINDOW: int = 3  # three is appropriate.
 WORKERS: int = 4
 
 
-def process_idiom2lemma2pos(pair: Tuple[str, List[Tuple[str, str]]]):
+def extract_bows(pair: Tuple[str, List[Tuple[str, str]]]):
     idiom = pair[0]
     lemma2pos = pair[1]
     verb_bow = dict()
@@ -28,25 +29,28 @@ def process_idiom2lemma2pos(pair: Tuple[str, List[Tuple[str, str]]]):
     for ngram in ngrams(lemma2pos, n=WINDOW):
         if "[IDIOM]" in [lemma for lemma, _ in ngram]:
             for lemma, pos in ngram:
-                if lemma != "[IDIOM]":
-                    if pos == "VERB":
-                        verb_bow[lemma] = verb_bow.get(lemma, 1) + 1
-                    elif pos == "NOUN":
-                        noun_bow[lemma] = noun_bow.get(lemma, 1) + 1
-                    elif pos == "ADJ":
-                        adj_bow[lemma] = adj_bow.get(lemma, 1) + 1
-                    elif pos == "ADV":
-                        adv_bow[lemma] = adv_bow.get(lemma, 1) + 1
+                if lemma == "[IDIOM]":
+                    continue  # skip the idiom itself
+                if lemma in STOP_WORDS:
+                    continue  # skip stopwords
+                if pos == "VERB":
+                    verb_bow[lemma] = verb_bow.get(lemma, 1) + 1
+                elif pos == "NOUN":
+                    noun_bow[lemma] = noun_bow.get(lemma, 1) + 1
+                elif pos == "ADJ":
+                    adj_bow[lemma] = adj_bow.get(lemma, 1) + 1
+                elif pos == "ADV":
+                    adv_bow[lemma] = adv_bow.get(lemma, 1) + 1
     return idiom, verb_bow, noun_bow, adj_bow, adv_bow
 
 
 def main():
     idiom2lemma2pos = load_idiom2lemma2pos()
-    total = len(list(idiom2lemma2pos))
+    total = len([None for _ in idiom2lemma2pos])
     with Pool(4) as p:
         # In order to show progress bar,
         # https://github.com/tqdm/tqdm/issues/484#issuecomment-461998250
-        idiom2bows = list(tqdm(p.imap(process_idiom2lemma2pos, idiom2lemma2pos), total=total))
+        idiom2bows = list(tqdm(p.imap(extract_bows, idiom2lemma2pos), total=total))
 
     with open(IDIOM2BOWS_TSV, 'w') as fh:
         tsv_writer = csv.writer(fh, delimiter="\t")

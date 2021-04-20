@@ -12,7 +12,6 @@ from multiprocessing.pool import Pool
 from tqdm import tqdm
 from idiom2collocations.loaders import load_idiom2sent
 from idiom2collocations.paths import NLP_MODEL, IDIOM2LEMMA2POS_TSV
-
 nlp: Language = load(NLP_MODEL)
 
 
@@ -25,20 +24,19 @@ def process_idiom2sent(pair: Tuple[str, List[str]]) -> Tuple[str, List[Tuple[str
     lemma2pos = [
         (token.text if token.text == "[IDIOM]" else token.lemma_, token.pos_)
         for token in nlp(untokenized)
-        # do some cleanup here.
-        if token.pos_ != "PROPN"  # we don't need proper nouns.
-        if not token.is_stop
-        if not token.like_num
-        if not token.is_punct
-        if not re.match(r'^[A-Z\'@!-\(\)]+$', token.text)
+        if not token.like_num  # don't need numbers
+        if not token.is_punct  # don't need punctuations
+        if not re.match(r'^[A-Z!@\-\(\)]$', token.text)  # don't need them.
+        # starting with... and ending with.
     ]
     return idiom, lemma2pos
 
 
 def main():
+    total = len([None for _ in load_idiom2sent()])
     idiom2sent = load_idiom2sent()  # test.
-    total = len(list(idiom2sent))
-    # --- execute the process with parallelism --- #
+
+    # --- execute the process with multiprocessing --- #
     with Pool(4) as p:
         # In order to show progress bar,
         # https://github.com/tqdm/tqdm/issues/484#issuecomment-461998250
