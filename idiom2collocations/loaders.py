@@ -1,8 +1,8 @@
 import json
 from functional import seq
 from functional.pipeline import Sequence
-from idiom2collocations.paths import IDIOM2SENT_TSV, IDIOM2LEMMA2POS_TSV, IDIOM2BOWS_TSV,\
-    IDIOM2COLLS_TF_TSV, IDIOM2COLLS_TFIDF_TSV, IDIOM2COLLS_PMI_TSV
+from idiom2collocations.paths import IDIOM2SENT_TSV, IDIOM2LEMMA2POS_TSV, IDIOM2BOWS_TSV, \
+    IDIOM2COLLS_TF_TSV, IDIOM2COLLS_TFIDF_TSV, IDIOM2COLLS_PMI_TSV, LEMMA2IDFS_TSV, IDIOM2FREQ_TSV
 
 
 def load_idiom2sent() -> Sequence:
@@ -42,3 +42,20 @@ def load_idiom2colls(mode: str) -> Sequence:
                           json.loads(row[2]),  # noun colls
                           json.loads(row[3]),  # adj colls
                           json.loads(row[4])))  # adv colls
+
+
+def load_lemma2idfs() -> Sequence:
+    return seq.csv(LEMMA2IDFS_TSV, delimiter="\t") \
+              .map(lambda row: (row[0],
+                                float(row[1]),  # verb idf
+                                float(row[2]),  # noun idf
+                                float(row[3]),  # adj idf
+                                float(row[4]))  # adv idf
+                   )
+
+
+def load_idiom2freq() -> Sequence:
+    return seq.csv(IDIOM2FREQ_TSV, delimiter="\t") \
+              .map(lambda row: (row[0],  # the idiom
+                                int(row[1]))  # the count.
+                   )

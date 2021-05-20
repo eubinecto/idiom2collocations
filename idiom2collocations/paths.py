@@ -26,13 +26,13 @@ IDIOM2SENT_TSV = path.join(IDIOMS_DIR, "idiom2sent.tsv")  # just raw sentences, 
 IDIOM2BOWS_TSV = path.join(IDIOMS_DIR, "idiom2bows.tsv")  # lemmatised. cleaned. stopwords may have been removed. depends.
 IDIOM2LEMMA2POS_TSV = path.join(IDIOMS_DIR, "idiom2lemma2pos.tsv")  # lemmatised, cleaned. stopwords are removed.
 IDIOM2LEMMA2POS_REMOVED_TSV = path.join(IDIOMS_DIR, "idiom2lemma2pos_removed.tsv")  # lemmatised, cleaned. stopwords are removed.
-
+IDIOM2FREQ_TSV = path.join(IDIOMS_DIR, "idiom2freq.tsv")  # idiom, occurrences in the corpus.
 
 # files - data. The extracted collocations will be stored here.
 IDIOM2COLLS_TF_TSV = path.join(PROJECT_DATA_DIR, "idiom2colls_tf.tsv")  # with point-wise mutual inclusive.
 IDIOM2COLLS_TFIDF_TSV = path.join(PROJECT_DATA_DIR, "idiom2colls_tfidf.tsv")  # with point-wise mutual inclusive.
 IDIOM2COLLS_PMI_TSV = path.join(PROJECT_DATA_DIR, "idiom2colls_pmi.tsv")  # with point-wise mutual inclusive.
-LEMMA2IDF_TSV = path.join(PROJECT_DATA_DIR, "lemma2idf.tsv")
+LEMMA2IDFS_TSV = path.join(PROJECT_DATA_DIR, "lemma2idfs.tsv")
 
 # files - coca_spok
 COCA_SPOK_TRAIN_NDJSON = path.join(COCA_SPOK_DIR, 'train.ndjson')

@@ -21,6 +21,7 @@ def main():
     # to be used for the case of using pmi
     parser.add_argument("--lower_bound",
                         type=int,
+                        # greater than this bound.
                         default=3)
 
     args = parser.parse_args()
